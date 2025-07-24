@@ -10,23 +10,54 @@ class Property
 }
 class Shape
 {
+	// name is just the type of the shape so // circle, rectangle, triangle, etc
 	public function __construct(public readonly string $name, public readonly array $properties) {}
 }
 class Parser
 {
 	public static function parse(array $input): array
 	{
-		return self::parseShapes(self::splitIntoArrays($input, 0, [],  []), 0, []);
+
+		// $res = self::splitIntoArrays($input);
+		// var_dump($res);
+		return self::parseShapes(self::splitIntoArrays($input), 0, []);
 	}
 
-	private static function splitIntoArrays(array $input, int $pointer, array $array, array $res, int $check = 0): array
+	// fuck functional programming man just do a while loop
+	private static function splitIntoArrays(array $tokensArray): array
 	{
-		return match (true) {
-			$pointer >=  count($input) => [...$res, $array],
-			$check === 2 => self::splitIntoArrays($input, $pointer + 1, [], [...$res, $array], 0),
-			$input[$pointer]->type === 'keyword' && !empty($array) =>  self::splitIntoArrays($input, $pointer + 1, [$input[$pointer]], [...$res, $array], $check + 1),
-			default => self::splitIntoArrays($input, $pointer + 1, [...$array, $input[$pointer]],  $res, $check)
-		};
+		$res = [];
+		$pointer = 0;
+		$shapeTokens = [];
+		return array_reduce($tokensArray, function ($res, $token) use (&$shapeTokens, &$pointer) {
+			if ($token->type === 'punctuation' && $token->value === ')') {
+				$res[] = $shapeTokens;
+				$shapeTokens = [];
+			}
+			$shapeTokens[] = $token;
+			$pointer++;
+			return $res;
+		}, []);
+		return $res;
+
+
+		// while ($pointer < count($tokensArray)) {
+		// 	$token = $tokensArray[$pointer];
+		// 	if ($token->type === 'punctuation' && $token->value === ')') {
+		// 		$res[] = $shapeTokens;
+		// 		$shapeTokens = [];
+		// 	}
+		// 	$shapeTokens[] = $token;
+		// 	$pointer++;
+		// }
+		// return $res;
+
+		// return match (true) {
+		// 	$pointer >=  count($input) => [...$res, $array],
+		// 	$check === 2 => self::splitIntoArrays($input, $pointer + 1, [], [...$res, $array], 0),
+		// 	$input[$pointer]->type === 'keyword' && !empty($array) =>  self::splitIntoArrays($input, $pointer + 1, [$input[$pointer]], [...$res, $array], $check + 1),
+		// 	default => self::splitIntoArrays($input, $pointer + 1, [...$array, $input[$pointer]],  $res, $check)
+		// };
 	}
 
 	private static function parseShapes(array $shapesArray, int $pointer,  array $shapes): array

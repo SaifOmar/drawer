@@ -13,11 +13,16 @@ $text = file_get_contents('shapes.dsl');
 
 $tokens = Tokenizer::tokenize($text);
 file_put_contents('tokens.json', json_encode($tokens, JSON_PRETTY_PRINT));
-$parsed = Parser::parse($tokens);
-$rendered = Renderer::render($parsed);
+// var_dump($tokens);
 
-var_dump($tokens);
-var_dump($parsed);
+var_dump(gettype($tokens[0]));
+$parsed = Parser::parse($tokens);
+file_put_contents('parsed.json', json_encode($parsed, JSON_PRETTY_PRINT));
+// var_dump($parsed);
+$rendered = Renderer::render($parsed);
+// var_dump($rendered);
+
+
 
 // Renderer::renderShapes([Shape, Shape, ...]) => "<div>...</div>"
 //

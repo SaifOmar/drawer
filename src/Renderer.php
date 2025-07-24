@@ -53,8 +53,11 @@ class Renderer
 		}
 
 
-		// Add default background
 		$styleParts[] = "background: #3498db";
+		// Add default background
+		if (isset($props['color'])) {
+			$styleParts[] = "background: {$props['color']}";
+		}
 
 		$inlineStyle = implode('; ', $styleParts);
 
